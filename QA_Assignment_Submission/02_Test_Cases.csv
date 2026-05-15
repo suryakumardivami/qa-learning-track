@@ -1,0 +1,204 @@
+Test Case ID,Module,Title,Preconditions,Test Data,Test Steps,Expected Result,Priority,Type
+TC-LOGIN-001,Login & Authentication,Successful vendor login with valid credentials,"Vendor account exists and is active; application is accessible","Email: vendorA@testcorp.com | Password: Vendor@1234 | Vendor ID: VEND-001 | Role: Vendor","1. Navigate to the login page
+2. Enter registered vendor email: vendorA@testcorp.com
+3. Enter correct password: Vendor@1234
+4. Click Login","Vendor is authenticated and redirected to the vendor dashboard. No error messages displayed.",P1,Positive
+TC-LOGIN-002,Login & Authentication,Successful AP team member login,"AP user account exists and is active","Email: ap.reviewer@company.com | Password: APUser@1234 | Role: AP Team Member","1. Navigate to the login page
+2. Enter AP user email: ap.reviewer@company.com
+3. Enter correct password: APUser@1234
+4. Click Login","AP user is authenticated and redirected to the AP invoice queue. Role-appropriate dashboard is shown.",P1,Positive
+TC-LOGIN-003,Login & Authentication,Login fails with incorrect password,"Vendor account exists","Email: vendorA@testcorp.com | Wrong Password: WrongPass@99","1. Navigate to the login page
+2. Enter registered vendor email: vendorA@testcorp.com
+3. Enter incorrect password: WrongPass@99
+4. Click Login","Login is rejected. An error message such as 'Invalid email or password' is displayed. User remains on the login page.",P1,Negative
+TC-LOGIN-004,Login & Authentication,Login fails with unregistered email,"Application is accessible","Email: notregistered@fake.com | Password: AnyPass@123","1. Navigate to the login page
+2. Enter an email not registered in the system: notregistered@fake.com
+3. Enter any password: AnyPass@123
+4. Click Login","Login is rejected. Error message shown. No hint that the email does not exist (security best practice).",P1,Negative
+TC-LOGIN-005,Login & Authentication,Account lockout after repeated failed login attempts,"Vendor account exists; lockout policy is configured (e.g. 5 attempts)","Email: vendorA@testcorp.com | Wrong Password: WrongPass@99 | Lockout threshold: 5 consecutive failed attempts","1. Navigate to the login page
+2. Enter correct email vendorA@testcorp.com but wrong password: WrongPass@99
+3. Repeat steps 1-2 until the lockout threshold (5 attempts) is reached","Account is locked after the threshold is met. User sees a message such as 'Account locked. Please contact support or try again after X minutes.'",P1,Security
+TC-LOGIN-006,Login & Authentication,Session expires after inactivity and redirects to login,"User is logged in; session timeout is configured","Email: vendorA@testcorp.com | Password: Vendor@1234 | Session timeout: 30 minutes idle","1. Log in as vendor: vendorA@testcorp.com
+2. Leave the session idle beyond the timeout period (30 minutes)
+3. Attempt to click any action on the page","User is automatically logged out and redirected to the login page. Any pending unsaved data triggers a warning.",P1,Security
+TC-LOGIN-007,Login & Authentication,Login with empty credentials,"Application is accessible","Email: (blank) | Password: (blank)","1. Navigate to the login page
+2. Leave both email and password fields blank
+3. Click Login","Form validation prevents submission. Error messages highlight the required fields. No API call is made.",P2,Negative
+TC-LOGIN-008,Login & Authentication,Vendor cannot access AP team dashboard after login,"Vendor is logged in","Logged-in user: vendorA@testcorp.com (Vendor role) | Target URL: /ap/invoices/queue","1. Log in as vendor: vendorA@testcorp.com
+2. Attempt to navigate to the AP invoice approval page via direct URL: /ap/invoices/queue","Access is denied. User is shown a 403 or 'Unauthorized' message and redirected appropriately.",P1,Security
+TC-REG-001,Vendor Registration,Vendor registers successfully with valid details,"Vendor registration page is accessible; email domain is not already registered in the system","Company Name: NewCorp Ltd | Email: newvendor@newcorp.com | Phone: +1-555-0101 | Address: 456 Business Ave NY 10001 | Tax ID: TAX-2026-099 | Password: NewVendor@1234","1. Navigate to the vendor registration page
+2. Enter company name: NewCorp Ltd
+3. Enter email: newvendor@newcorp.com
+4. Enter phone: +1-555-0101
+5. Enter address: 456 Business Ave NY 10001
+6. Enter Tax ID: TAX-2026-099
+7. Set password: NewVendor@1234
+8. Click Register","Registration is submitted successfully. Vendor receives a confirmation email to newvendor@newcorp.com. Account is created with status 'Pending Approval'. Vendor cannot log in until account is activated by admin.",P1,Positive
+TC-REG-002,Vendor Registration,Registration fails when email is already registered,"Email vendorA@testcorp.com is already registered and active in the system","Company Name: Duplicate Corp | Email: vendorA@testcorp.com (already exists) | Password: DupCorp@1234","1. Navigate to the vendor registration page
+2. Enter company name: Duplicate Corp
+3. Enter email: vendorA@testcorp.com (already in system)
+4. Complete all other required fields
+5. Click Register","Registration is rejected. System displays an error: 'An account with this email address already exists. Please log in or use a different email.' No duplicate vendor record is created.",P1,Negative
+TC-REG-003,Vendor Registration,Registration blocked when required fields are missing,"Vendor registration page is accessible","Email: (blank) | Company Name: TestCorp Ltd | Phone: +1-555-0102 | Password: Test@1234","1. Navigate to the vendor registration page
+2. Leave the email field blank
+3. Complete all other required fields
+4. Click Register","Form validation blocks submission. Error message highlights the missing email field. No API call is made. No vendor record is created.",P1,Negative
+TC-REG-004,Vendor Registration,Registration fails with invalid email format,"Vendor registration page is accessible","Email: notavalidemail (no @ or domain) | Company Name: TestCorp Ltd | Password: Test@1234","1. Navigate to the vendor registration page
+2. Enter invalid email format: notavalidemail
+3. Complete all other required fields
+4. Click Register","Form validation rejects the submission. Error message: 'Please enter a valid email address.' No vendor record is created.",P1,Negative
+TC-INV-001,Invoice Submission,Submit a valid invoice with all required fields and a PDF attachment,"Vendor VEND-001 is logged in; PO-2026-045 exists with a total value of $10,000.00 and status Open","Vendor ID: VEND-001 | PO Number: PO-2026-045 | PO Value: $10,000.00 | Invoice Number: INV-TC-001 | Invoice Date: 15 May 2026 | Invoice Amount: $5,000.00 | Attachment: invoice_valid.pdf (2 MB PDF)","1. Navigate to Invoice Submission
+2. Select PO: PO-2026-045
+3. Enter invoice number: INV-TC-001
+4. Enter invoice date: 15 May 2026
+5. Enter invoice amount: $5,000.00
+6. Upload invoice_valid.pdf (2 MB)
+7. Click Submit","Invoice is submitted successfully. Status changes to 'Submitted'. Vendor sees a confirmation message. Invoice appears in submission history with correct PO reference, amount, and date.",P1,Positive
+TC-INV-002,Invoice Submission,Submission blocked when required fields are missing,"Vendor VEND-001 is logged in; PO-2026-045 exists","Vendor ID: VEND-001 | PO Number: PO-2026-045 | Invoice Number: (blank) | Invoice Date: 15 May 2026 | Invoice Amount: $5,000.00","1. Navigate to Invoice Submission
+2. Select PO: PO-2026-045
+3. Leave the invoice number field blank
+4. Enter invoice date: 15 May 2026 and amount: $5,000.00
+5. Click Submit","Form validation blocks submission. A clear error message highlights the missing invoice number field. No invoice record is created.",P1,Negative
+TC-INV-003,Invoice Submission,Submit invoice with amount exactly equal to PO value,"Vendor VEND-001 is logged in; PO-2026-045 has a total value of $10,000.00","Vendor ID: VEND-001 | PO Number: PO-2026-045 | PO Value: $10,000.00 | Invoice Number: INV-TC-003 | Invoice Amount: $10,000.00 (boundary — equals PO total) | Invoice Date: 15 May 2026 | Attachment: invoice_valid.pdf (2 MB)","1. Navigate to Invoice Submission
+2. Select PO: PO-2026-045
+3. Enter invoice number: INV-TC-003
+4. Enter invoice amount: $10,000.00 (equal to PO value)
+5. Enter invoice date: 15 May 2026
+6. Upload invoice_valid.pdf
+7. Click Submit","Invoice is accepted and submitted successfully. This is a valid boundary value — amount equal to PO total is permitted.",P1,Boundary
+TC-INV-004,Invoice Submission,Submission blocked when invoice amount exceeds PO value,"Vendor VEND-001 is logged in; PO-2026-045 has a total value of $10,000.00","Vendor ID: VEND-001 | PO Number: PO-2026-045 | PO Value: $10,000.00 | Invoice Number: INV-TC-004 | Invoice Amount: $15,000.00 (exceeds PO by $5,000.00) | Invoice Date: 15 May 2026 | Attachment: invoice_valid.pdf | Business Rule: over-invoicing is blocked (confirmed with BA before execution)","1. Navigate to Invoice Submission
+2. Select PO: PO-2026-045
+3. Enter invoice number: INV-TC-004
+4. Enter invoice amount: $15,000.00
+5. Enter invoice date: 15 May 2026
+6. Upload invoice_valid.pdf
+7. Click Submit","Submission is blocked. System displays a validation error: 'Invoice amount ($15,000.00) exceeds the approved PO value ($10,000.00). Submission is not permitted.' No invoice record is created in the database.",P1,Negative
+TC-INV-005,Invoice Submission,Upload an unsupported file format,"Vendor VEND-001 is logged in; invoice form is open","Vendor ID: VEND-001 | PO Number: PO-2026-045 | Invoice Number: INV-TC-005 | Amount: $3,000.00 | Invalid File: test_script.exe | Accepted formats: PDF only (assumed; confirm with BA)","1. Navigate to Invoice Submission
+2. Enter PO: PO-2026-045, Invoice: INV-TC-005, Amount: $3,000.00, Date: 15 May 2026
+3. Upload a .exe file instead of PDF
+4. Click Submit","File upload is rejected. Error message specifies the accepted formats (e.g., 'Only PDF files are accepted.'). No invoice record is created.",P1,Negative
+TC-INV-006,Invoice Submission,Upload a file exceeding the maximum allowed size,"Vendor VEND-001 is logged in; invoice form is open","Vendor ID: VEND-001 | PO Number: PO-2026-045 | Invoice Number: INV-TC-006 | Amount: $3,000.00 | Oversized File: large_invoice.pdf (51 MB) | Max file size limit: 50 MB (assumed; confirm with BA)","1. Navigate to Invoice Submission
+2. Enter PO: PO-2026-045, Invoice: INV-TC-006, Amount: $3,000.00, Date: 15 May 2026
+3. Upload large_invoice.pdf (51 MB)
+4. Click Submit","Upload is rejected. Error message clearly states the maximum allowed file size (e.g., 'File size exceeds the 50 MB limit.'). No partial upload is stored.",P1,Negative
+TC-INV-007,Invoice Submission,Upload a valid PDF within size limits,"Vendor VEND-001 is logged in; invoice form is open","Vendor ID: VEND-001 | PO Number: PO-2026-045 | Invoice Number: INV-TC-007 | Amount: $4,500.00 | Valid File: invoice_valid.pdf (2 MB PDF)","1. Navigate to Invoice Submission
+2. Enter PO: PO-2026-045, Invoice: INV-TC-007, Amount: $4,500.00, Date: 15 May 2026
+3. Upload invoice_valid.pdf (2 MB)
+4. Click Submit","File uploads successfully. Invoice is submitted. The attachment is accessible and downloadable from the invoice detail view.",P1,Positive
+TC-INV-008,Invoice Submission,Duplicate invoice submission is blocked or flagged,"Vendor VEND-001 has already submitted INV-TC-001 against PO-2026-045 with status Submitted","Vendor ID: VEND-001 | PO Number: PO-2026-045 | Duplicate Invoice Number: INV-TC-001 (already exists in system) | Amount: $5,000.00 | Date: 15 May 2026 | Attachment: invoice_valid.pdf","1. Navigate to Invoice Submission
+2. Select PO: PO-2026-045
+3. Enter invoice number: INV-TC-001 (same as previously submitted)
+4. Enter amount: $5,000.00 and date: 15 May 2026
+5. Upload invoice_valid.pdf
+6. Click Submit","System blocks the submission with a message: 'An invoice with number INV-TC-001 already exists for PO-2026-045. Please review your submission.' No duplicate record is created.",P1,Edge Case
+TC-INV-009,Invoice Submission,Vendor cannot submit invoice against a non-existent PO,"Vendor VEND-001 is logged in","Vendor ID: VEND-001 | Invalid PO Number: PO-9999-999 (does not exist in system) | Invoice Number: INV-TC-009 | Amount: $2,000.00","1. Navigate to Invoice Submission
+2. Attempt to enter or select PO: PO-9999-999 (non-existent)
+3. Enter invoice number: INV-TC-009 and amount: $2,000.00
+4. Click Submit","System prevents submission. Error message states the PO does not exist or is not linked to the vendor's account. No invoice record is created.",P1,Negative
+TC-INV-010,Invoice Submission,Invoice date set to a future date,"Vendor VEND-001 is logged in; invoice form is open","Vendor ID: VEND-001 | PO Number: PO-2026-045 | Invoice Number: INV-TC-010 | Amount: $3,500.00 | Future Invoice Date: 15 Jun 2026 (31 days in the future)","1. Navigate to Invoice Submission
+2. Select PO: PO-2026-045 and enter invoice number: INV-TC-010
+3. Set invoice date to: 15 Jun 2026 (future date)
+4. Enter amount: $3,500.00
+5. Click Submit","System rejects or flags the future-dated invoice. A validation message is displayed. Submission is blocked or requires explicit acknowledgment.",P2,Edge Case
+TC-INV-011,Invoice Submission,AP team member cannot submit invoices,"AP user ap.reviewer@company.com is logged in","Logged-in user: ap.reviewer@company.com (AP role) | Direct URL to submission form: /invoices/new","1. Log in as AP user: ap.reviewer@company.com
+2. Look for an invoice submission option in the navigation
+3. Attempt to access the submission form via direct URL: /invoices/new","No invoice submission option is available in the AP user interface. Direct URL access returns a 403 or redirects to the AP dashboard.",P1,Security
+TC-INV-012,Invoice Submission,Vendor views their own invoice submission history,"Vendor VEND-001 has at least 3 submitted invoices; vendor VEND-002 also has invoices in the system","Vendor ID: VEND-001 | Email: vendorA@testcorp.com | Expected invoices in history: INV-TC-001 INV-TC-003 INV-TC-007 | VEND-002 invoices must NOT appear","1. Log in as vendor: vendorA@testcorp.com (VEND-001)
+2. Navigate to Invoice History or My Invoices
+3. Review the list of submitted invoices","Only invoices belonging to VEND-001 are displayed (INV-TC-001, INV-TC-003, INV-TC-007). No invoices from VEND-002 appear. Invoice number, PO reference, amount, and status are shown.",P2,Positive
+TC-INV-013,Invoice Submission,Session timeout during invoice form fill causes graceful handling,"Vendor VEND-001 is logged in; session timeout is configured to 30 minutes","Vendor ID: VEND-001 | PO: PO-2026-045 | Partially filled form: Invoice number INV-TC-013 entered, amount not yet submitted | Session timeout: 30 minutes idle","1. Log in as vendor: vendorA@testcorp.com
+2. Open the invoice submission form
+3. Enter invoice number: INV-TC-013 and select PO: PO-2026-045
+4. Leave the session idle for 30+ minutes without submitting
+5. Attempt to click Submit","User is prompted to re-login. Message displayed: 'Your session has expired.' No partial invoice record is silently created in the database.",P1,Edge Case
+TC-APPR-001,Approval Workflow,AP user views the list of submitted invoices,"At least 3 invoices have been submitted by vendors; AP user is logged in","AP User: ap.reviewer@company.com | Expected invoices in queue: INV-TC-001 (VEND-001 $5,000.00) | INV-TC-007 (VEND-001 $4,500.00) | INV-TC-014 (VEND-002 $8,200.00) | All statuses: Submitted","1. Log in as AP team member: ap.reviewer@company.com
+2. Navigate to the invoice queue
+3. Review the displayed invoices","All submitted invoices are visible with relevant details: vendor name, PO number, invoice number, amount, submission date, and status. Both VEND-001 and VEND-002 invoices appear.",P1,Positive
+TC-APPR-002,Approval Workflow,AP user approves a valid submitted invoice,"Invoice INV-TC-007 is in Submitted status; AP user is logged in","AP User: ap.reviewer@company.com | Invoice: INV-TC-007 | Vendor: VEND-001 | PO: PO-2026-045 | Amount: $4,500.00 | Current Status: Submitted","1. Log in as AP user: ap.reviewer@company.com
+2. Open invoice INV-TC-007 from the queue
+3. Review the invoice details
+4. Click Approve
+5. Confirm the action if prompted","Invoice status changes to 'Approved'. Confirmation message shown to AP user. Invoice is forwarded to payment processing. Vendor vendorA@testcorp.com receives email notification.",P1,Positive
+TC-APPR-003,Approval Workflow,AP user rejects an invoice with a mandatory rejection reason,"Invoice INV-TC-014 is in Submitted status; AP user is logged in","AP User: ap.reviewer@company.com | Invoice: INV-TC-014 | Vendor: VEND-002 | PO: PO-2026-067 | Amount: $12,500.00 | Rejection Reason: 'Invoice amount does not match the agreed PO terms'","1. Log in as AP user: ap.reviewer@company.com
+2. Open invoice INV-TC-014 from the queue
+3. Click Reject
+4. Enter rejection reason: 'Invoice amount does not match the agreed PO terms'
+5. Confirm the rejection","Invoice status changes to 'Rejected'. Rejection reason is saved. Vendor VEND-002 receives email notification with the rejection reason. Invoice is removed from the active queue.",P1,Positive
+TC-APPR-004,Approval Workflow,Rejection without providing a reason is blocked,"Invoice INV-TC-014 is open in the AP review view","AP User: ap.reviewer@company.com | Invoice: INV-TC-014 | Rejection Reason: (blank — intentionally left empty)","1. Log in as AP user: ap.reviewer@company.com
+2. Open invoice INV-TC-014 from the queue
+3. Click Reject
+4. Leave the rejection reason field blank
+5. Click Confirm","Rejection is blocked. Validation message: 'Please provide a rejection reason before proceeding.' Invoice status remains unchanged.",P1,Negative
+TC-APPR-005,Approval Workflow,Vendor cannot access the invoice approval action,"Vendor VEND-001 is logged in; invoice INV-TC-001 exists in Submitted status","Logged-in user: vendorA@testcorp.com (Vendor role) | Invoice: INV-TC-001 | Target URL: /ap/invoices/INV-TC-001/approve","1. Log in as vendor: vendorA@testcorp.com
+2. Navigate to invoice INV-TC-001
+3. Attempt to click Approve or access /ap/invoices/INV-TC-001/approve via direct URL","Approval action is not available in the vendor interface. Direct URL access returns 403 Forbidden. Status of INV-TC-001 remains 'Submitted' and unchanged.",P1,Security
+TC-APPR-006,Approval Workflow,Approving an already-approved invoice is blocked,"Invoice INV-TC-007 has already been approved; AP user is logged in","AP User: ap.reviewer@company.com | Invoice: INV-TC-007 | Current Status: Approved","1. Log in as AP user: ap.reviewer@company.com
+2. Navigate to invoice INV-TC-007 (already in Approved status)
+3. Attempt to click Approve again","Action is blocked. System displays a message: 'This invoice has already been approved.' Status remains 'Approved'. No duplicate approval event is created in the audit log.",P2,Negative
+TC-APPR-007,Approval Workflow,Approving an already-rejected invoice is blocked,"Invoice INV-TC-014 has been rejected; AP user is logged in","AP User: ap.reviewer@company.com | Invoice: INV-TC-014 | Current Status: Rejected","1. Log in as AP user: ap.reviewer@company.com
+2. Navigate to invoice INV-TC-014 (Rejected status)
+3. Attempt to click Approve","Action is blocked. System informs the AP user: 'This invoice has already been rejected.' Status remains 'Rejected'. No approval event is created.",P2,Negative
+TC-APPR-008,Approval Workflow,Two AP users simultaneously attempt to approve the same invoice,"Two AP user sessions are active; invoice INV-TC-015 is in Submitted status","AP User 1: ap.reviewer1@company.com | AP User 2: ap.reviewer2@company.com | Invoice: INV-TC-015 | Vendor: VEND-001 | Amount: $6,000.00 | Status: Submitted","1. AP User 1 (ap.reviewer1) opens invoice INV-TC-015 in one browser session
+2. AP User 2 (ap.reviewer2) opens the same invoice INV-TC-015 simultaneously in a separate session
+3. Both users click Approve at the same time (within 1-2 seconds of each other)","Only one approval is processed. The second user receives: 'This invoice has already been acted upon.' Invoice status shows a single 'Approved' event. Audit log contains exactly one approval entry.",P1,Edge Case
+TC-APPR-009,Approval Workflow,Approved invoice is forwarded to payment processing,"Invoice INV-TC-007 has just been approved by AP user","AP User: ap.reviewer@company.com | Invoice: INV-TC-007 | Vendor: VEND-001 | Amount: $4,500.00 | PO: PO-2026-045 | Payment queue DB table: payment_queue","1. AP user ap.reviewer@company.com approves invoice INV-TC-007
+2. Check the payment processing queue (payment_queue DB table or downstream payment system)
+3. Verify the invoice reference appears with correct details","Invoice INV-TC-007 appears in the payment queue with vendor VEND-001, amount $4,500.00, and PO reference PO-2026-045. No manual intervention is required. Only one payment record exists for this invoice.",P1,Integration
+TC-APPR-010,Approval Workflow,Vendor can resubmit a rejected invoice with corrections,"Invoice INV-TC-014 is in Rejected status; vendor VEND-002 is logged in","Vendor ID: VEND-002 | Rejected Invoice: INV-TC-014 | Original Amount: $12,500.00 | Corrected Amount: $10,000.00 | Rejection Reason on record: 'Invoice amount does not match the agreed PO terms'","1. Log in as vendor VEND-002
+2. Navigate to rejected invoice INV-TC-014
+3. Edit the invoice amount to $10,000.00 or create a corrected resubmission
+4. Submit the updated invoice","Resubmitted invoice enters the review queue with status 'Submitted'. Original rejection reason remains accessible for AP reference. Invoice is treated as a new or updated submission per business rules.",P2,Positive
+TC-NOTIF-001,Email Notifications,Vendor receives email notification on invoice submission,"Vendor VEND-001 has submitted a valid invoice; email service is configured and operational","Vendor ID: VEND-001 | Email: vendorA@testcorp.com | Invoice: INV-TC-001 | PO: PO-2026-045 | Amount: $5,000.00 | Expected trigger: on Submitted status change","1. Submit valid invoice INV-TC-001 against PO-2026-045 for $5,000.00 as vendor VEND-001
+2. Check vendorA@testcorp.com inbox within 5 minutes","Vendor receives an email confirming invoice submission. Email includes invoice number (INV-TC-001), PO reference (PO-2026-045), submission date (15 May 2026), and current status (Submitted).",P2,Integration
+TC-NOTIF-002,Email Notifications,Vendor receives email notification when invoice is approved,"Invoice INV-TC-007 is approved by AP user","Vendor ID: VEND-001 | Email: vendorA@testcorp.com | Invoice: INV-TC-007 | Amount: $4,500.00 | Approved by: ap.reviewer@company.com | Expected trigger: on Approved status change","1. AP user ap.reviewer@company.com approves invoice INV-TC-007
+2. Check vendorA@testcorp.com inbox within 5 minutes","Vendor receives an approval notification email. Email includes invoice number (INV-TC-007), approval date, and next steps (payment reference or expected payment timeline if applicable).",P2,Integration
+TC-NOTIF-003,Email Notifications,Vendor receives email notification when invoice is rejected,"Invoice INV-TC-014 is rejected by AP user with a reason","Vendor ID: VEND-002 | Email: vendorB@testcorp.com | Invoice: INV-TC-014 | Amount: $12,500.00 | Rejection Reason: 'Invoice amount does not match the agreed PO terms' | Expected trigger: on Rejected status change","1. AP user ap.reviewer@company.com rejects invoice INV-TC-014 with reason: 'Invoice amount does not match the agreed PO terms'
+2. Check vendorB@testcorp.com inbox within 5 minutes","Vendor VEND-002 receives a rejection notification email. Email includes invoice number (INV-TC-014), the rejection reason, and guidance on resubmission if applicable.",P2,Integration
+TC-NOTIF-004,Email Notifications,System handles email delivery failure gracefully,"Email service is simulated to fail; invoice INV-TC-016 is ready for approval","Invoice: INV-TC-016 | Vendor: VEND-001 | Email: vendorA@testcorp.com | AP User: ap.reviewer@company.com | SMTP Config: invalid host or service set to unavailable","1. Set email service to a failing state (invalid SMTP config or kill mail service)
+2. AP user approves invoice INV-TC-016
+3. Observe system behavior and check application and email logs","System does not crash or throw an unhandled error. Invoice INV-TC-016 status is correctly updated to 'Approved' in the portal. Email failure is logged (invoice ID, recipient, timestamp, error reason). An alert or retry mechanism is triggered.",P2,Edge Case
+TC-RPT-001,Reports,Monthly report is accessible to authorized AP users,"At least 5 invoices have been processed in May 2026; AP user is logged in","AP User: ap.reports@company.com | Report period: May 2026 | Dataset: 5 submitted, 3 approved ($25,500 total), 1 rejected, 1 pending","1. Log in as AP user: ap.reports@company.com
+2. Navigate to Reports
+3. Select the monthly report for May 2026","Monthly report is displayed with invoice activity for May 2026. Submitted (5), approved (3), rejected (1), and pending (1) counts are shown with corresponding totals.",P2,Positive
+TC-RPT-002,Reports,Monthly report data matches actual invoice records,"6 invoices processed in May 2026 with known values","AP User: ap.reports@company.com | Report period: May 2026 | Known invoices: INV-TC-001 approved $5,000 | INV-TC-003 approved $10,000 | INV-TC-007 approved $4,500 | INV-TC-014 rejected $12,500 | INV-TC-015 approved $6,000 | INV-TC-016 pending $3,500 | Expected approved total: $25,500","1. Log in as AP user: ap.reports@company.com
+2. Open the monthly report for May 2026
+3. Compare report totals against the invoice list filtered by May 2026","Report counts and amounts exactly match the filtered invoice list. Approved total: $25,500. Rejected count: 1. Pending count: 1. No discrepancy between report data and portal data.",P2,Data Accuracy
+TC-RPT-003,Reports,Vendor cannot access monthly reports,"Vendor VEND-001 is logged in","Logged-in user: vendorA@testcorp.com (Vendor role) | Target URL: /reports/monthly/may-2026","1. Log in as vendor: vendorA@testcorp.com
+2. Attempt to navigate to the Reports section via UI
+3. Attempt to access /reports/monthly/may-2026 via direct URL","Reports section is not visible in vendor UI. Direct URL access returns 403 Forbidden. No report data (totals, invoice counts, amounts) is exposed.",P1,Security
+TC-RPT-004,Reports,Report reflects invoices up to the correct date boundary,"Invoices exist on 30 Apr 2026 and 1 May 2026; AP user is logged in","AP User: ap.reports@company.com | Boundary Invoice 1: INV-APR-099 submitted 30 Apr 2026 | Boundary Invoice 2: INV-MAY-001 submitted 1 May 2026 | Target report: April 2026","1. Log in as AP user: ap.reports@company.com
+2. Open the monthly report for April 2026
+3. Verify which invoices are included","Only invoices from April 2026 date range are included. INV-APR-099 (30 Apr) is present. INV-MAY-001 (1 May) is excluded. No May invoices appear in the April report.",P2,Boundary
+TC-SEC-001,Security,Vendor A cannot access Vendor B's invoice via URL manipulation,"Vendor A (VEND-001) and Vendor B (VEND-002) both have submitted invoices; Vendor A is logged in","Vendor A: VEND-001 | Email: vendorA@testcorp.com | Vendor A Invoice ID: 501 (URL: /invoices/501) | Vendor B: VEND-002 | Vendor B Invoice ID: 502 (URL: /invoices/502) | Vendor B Invoice Amount: $8,200.00","1. Log in as Vendor A: vendorA@testcorp.com
+2. Note Vendor A's invoice URL: /invoices/501
+3. Modify the URL to: /invoices/502 (Vendor B's invoice)
+4. Observe the page response","Access is denied with a 403 Forbidden response. No data from Vendor B's invoice (company name, amount $8,200.00, PO reference, PDF attachment) is displayed. Vendor A is redirected to their own dashboard.",P1,Security
+TC-SEC-002,Security,Unauthenticated user is redirected to login for all protected pages,"User is not logged in; no active session exists","No session or token | Target URLs: /invoices | /ap/invoices/queue | /reports/monthly/may-2026 | /invoices/501","1. Open a fresh browser session with no active login
+2. Navigate directly to /invoices
+3. Navigate directly to /ap/invoices/queue
+4. Navigate directly to /reports/monthly/may-2026
+5. Navigate directly to /invoices/501","All protected pages redirect to the login page. No content from protected areas is rendered. API endpoints return 401 Unauthorized with no data payload.",P1,Security
+TC-SEC-003,Security,SQL injection attempt in login form is safely handled,"Application login page is accessible","SQL Injection Payload — Email field: ' OR 1=1 -- | Password field: anypassword123","1. Navigate to the login page
+2. Enter in the email field: ' OR 1=1 --
+3. Enter password: anypassword123
+4. Click Login","Login is rejected. System returns a standard error message: 'Invalid email or password.' No unintended data is returned. No server error or stack trace is exposed.",P1,Security
+TC-SEC-004,Security,Upload a file with malicious content disguised as PDF,"Vendor VEND-001 is logged in; invoice form is open","Vendor ID: VEND-001 | PO: PO-2026-045 | Invoice: INV-TC-SEC-004 | Amount: $2,500.00 | Malicious File: malicious_script.js renamed to invoice_doc.pdf","1. Log in as vendor: vendorA@testcorp.com
+2. Navigate to Invoice Submission and fill all required fields (PO: PO-2026-045, Amount: $2,500.00)
+3. Upload the file: malicious_script.js renamed as invoice_doc.pdf
+4. Click Submit","File is rejected. System validates file content not just extension. Error message: 'Invalid file type. Only valid PDF documents are accepted.' No file is stored on the server.",P1,Security
+TC-SEC-005,Security,Session token is invalidated on logout,"Vendor VEND-001 is logged in","Vendor: VEND-001 | Email: vendorA@testcorp.com | Session token captured from browser dev tools before logout | Target endpoint: GET /invoices/501","1. Log in as vendor: vendorA@testcorp.com
+2. Capture the active session token from browser dev tools (Network tab or Application > Cookies)
+3. Log out of the portal
+4. Using the captured token send a direct API request to GET /invoices/501","API returns 401 Unauthorized. Session token is invalidated server-side upon logout. The captured token cannot be reused to access any protected endpoint.",P1,Security
+TC-SEC-006,Security,AP approval page is inaccessible to vendor via direct URL,"Vendor VEND-001 is logged in","Vendor: VEND-001 | Email: vendorA@testcorp.com | Target URL: /ap/invoices/INV-TC-007/approve | Invoice INV-TC-007 current status: Approved","1. Log in as vendor: vendorA@testcorp.com
+2. Navigate directly to: /ap/invoices/INV-TC-007/approve via the browser URL bar
+3. Attempt to trigger the approval action","Access is denied. Page returns 403 Forbidden or redirects vendor to their own dashboard. No approval action is performed. Invoice status remains unchanged.",P1,Security
+TC-PERF-001,Performance,Monthly report generates within acceptable time under concurrent AP user load,"QA environment has at least 500 invoice records for May 2026; performance test tool is available (e.g. JMeter or k6)","Concurrent users: 50 AP users | Report period: May 2026 | Dataset size: 500 invoice records | Acceptable response time: report loads within 5 seconds under load | Test tool: JMeter or k6","1. Configure a load test script simulating 50 concurrent AP users each requesting the May 2026 monthly report simultaneously
+2. Execute the load test
+3. Measure response time for each request
+4. Monitor server CPU and memory during the test
+5. Validate report data accuracy for a sample of 5 responses","All 50 concurrent report requests complete within 5 seconds. No request times out or returns an error. Report data is accurate and consistent across all responses. Server CPU remains below 80% throughout the test.",P2,Performance
+TC-PERF-002,Performance,Invoice submission remains stable under concurrent vendor load,"QA environment is running; 20 vendor test accounts are available; 5 active POs exist","Concurrent vendors: 20 (VEND-001 through VEND-020) | POs: PO-2026-045 to PO-2026-049 (4 vendors per PO) | Invoice amounts: $1,000 to $5,000 | Attachments: invoice_valid.pdf (2 MB each) | Acceptable response time: submission completes within 3 seconds | Test tool: JMeter or k6","1. Configure a load test script simulating 20 concurrent vendor users each submitting a unique invoice simultaneously
+2. Each vendor submits against their assigned PO with a unique invoice number (INV-PERF-001 through INV-PERF-020)
+3. Execute the load test and measure submission response time per request
+4. After the test verify all 20 invoice records exist in the database","All 20 concurrent invoice submissions succeed without errors. Each submission completes within 3 seconds. All 20 invoice records are created with correct vendor IDs, PO references, amounts, and status 'Submitted'. No data corruption or duplicate records occur.",P2,Performance
