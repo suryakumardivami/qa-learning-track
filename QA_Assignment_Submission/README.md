@@ -1,11 +1,6 @@
 # QA Assignment Submission
 ## Vendor Invoice Management Portal
 
-**Prepared by:** Vyas
-**Date:** May 2026
-
----
-
 ## Submission Overview
 
 This submission contains structured QA deliverables for the Vendor Invoice Management Portal assignment. The work covers the full spectrum of QA thinking — from business understanding and risk identification through to detailed test cases, traceability, and realistic bug reporting.
